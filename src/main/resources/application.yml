@@ -1,0 +1,4 @@
+app:
+  telegram:
+    username: ${env.variables.telegram.username}
+    token: ${env.variables.telegram.token}
