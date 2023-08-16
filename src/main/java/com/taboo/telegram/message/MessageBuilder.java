@@ -1,6 +1,7 @@
 package com.taboo.telegram.message;
 
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -16,6 +17,15 @@ public class MessageBuilder {
         var message = new SendMessage();
         message.setChatId(chatId);
         message.setText(text);
+        return message;
+    }
+
+    public SendMessage buildFormattedTextMessage(Long chatId) {
+        var message = new SendMessage();
+        message.setChatId(chatId);
+        String parseMode = ParseMode.MARKDOWNV2;
+        message.setParseMode(parseMode);
+        message.setText(generateFormattedText(parseMode));
         return message;
     }
 
@@ -43,6 +53,21 @@ public class MessageBuilder {
         var file = new InputFile(fileId);
         message.setSticker(file);
         return message;
+    }
+
+    public String generateFormattedText(String parseMode) {
+        if (ParseMode.MARKDOWNV2.equals(parseMode)) {
+            return """
+                    [inline URL](http://www.example.com/)
+                    [inline user mention](tg://user?id=1234567890)
+                    """;
+        } else if (ParseMode.HTML.equals(parseMode)) {
+            return """
+                    <span class=tg-spoiler>The butler did it!</span>
+                    <tg-spoiler>The butler did it!</tg-spoiler>
+                    """;
+        }
+        return null;
     }
 
 }

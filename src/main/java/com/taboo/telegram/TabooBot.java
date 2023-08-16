@@ -36,21 +36,29 @@ public class TabooBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
         Long chatId = message.getChatId();
+        log.info("telegram id ={}",message.getFrom().getId());
         if (message.hasText()) {
+            if (message.hasEntities()) {
+                logMessageEntities(message);
+            }
             String text = message.getText();
             switch (text) {
-                case "text" -> execute(messageBuilder.buildTextMessage(chatId, "My text message"));
-                case "photo" -> {
+                case "/text" -> execute(messageBuilder.buildTextMessage(chatId, "My text message"));
+                case "/photo" -> {
                     var sendPhoto = messageBuilder.buildPhotoMessage(chatId, NEW_YORK_PHOTO_URL, NEW_YORK_PHOTO_CAPTION);
                     execute(sendPhoto);
                 }
-                case "document" -> {
+                case "/document" -> {
                     var sendDocument = messageBuilder.buildDocumentMessage(chatId, "Here is a file", readFile("/files/New-York.jpeg"));
                     execute(sendDocument);
                 }
-                case "sticker" -> {
+                case "/sticker" -> {
                     var sendSticker = messageBuilder.buildStickerMessage(chatId, STICKER_FILE_ID);
                     execute(sendSticker);
+                }
+                case "/formattedText" -> {
+                    var formattedMessage = messageBuilder.buildFormattedTextMessage(chatId);
+                    execute(formattedMessage);
                 }
             }
         } else if (message.hasSticker()) {
@@ -67,5 +75,17 @@ public class TabooBot extends TelegramLongPollingBot {
     private File readFile(String path) {
         ClassPathResource resource = new ClassPathResource(path);
         return resource.getFile();
+    }
+
+    public void logMessageEntities(Message message) {
+        message.getEntities().forEach(entity -> {
+            String logText =
+                    switch(entity.getType()) {
+                        case "text_link" -> "text=%s, link=%s".formatted(entity.getText(), entity.getUrl());
+                        case "text_mention" -> "text=%s, userId=%s".formatted(entity.getText(), entity.getUser().getId());
+                        default -> entity.getText();
+                    };
+            log.info("Message entity={}", logText);
+        });
     }
 }
