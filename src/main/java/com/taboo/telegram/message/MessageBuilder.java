@@ -2,13 +2,14 @@ package com.taboo.telegram.message;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
-import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
+import org.telegram.telegrambots.meta.api.methods.send.*;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.io.File;
+import java.util.List;
 
 @Component
 public class MessageBuilder {
@@ -26,6 +27,43 @@ public class MessageBuilder {
         String parseMode = ParseMode.MARKDOWNV2;
         message.setParseMode(parseMode);
         message.setText(generateFormattedText(parseMode));
+        return message;
+    }
+    public SendMessage buildReplyKeyboardMessage(Long chatId) {
+        var message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("What game do you prefer?");
+        var replyKeyboard = new ReplyKeyboardMarkup();
+        var row1 = new KeyboardRow();
+        row1.add("dice");
+        row1.add("darts");
+        var row2 = new KeyboardRow();
+        row2.add("football");
+        row2.add("basketball");
+        var row3 = new KeyboardRow();
+        row3.add("bowling");
+        row3.add("casino");
+        replyKeyboard.setKeyboard(List.of(row1, row2, row3));
+        replyKeyboard.setResizeKeyboard(true);
+        replyKeyboard.setOneTimeKeyboard(false);
+        message.setReplyMarkup(replyKeyboard);
+        return message;
+    }
+
+    public SendDice buildSendDice(Long chatId, String emoji) {
+        var dice = new SendDice();
+        dice.setChatId(chatId);
+        dice.setEmoji(emoji);
+        return dice;
+    }
+
+    public SendMessage buildDeleteKeyboardMessage(Long chatId) {
+        var message = new SendMessage();
+        message.setText("Come back soon!");
+        message.setChatId(chatId);
+        ReplyKeyboardRemove replyKeyboard = new ReplyKeyboardRemove();
+        replyKeyboard.setRemoveKeyboard(true);
+        message.setReplyMarkup(replyKeyboard);
         return message;
     }
 

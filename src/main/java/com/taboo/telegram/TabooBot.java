@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendDice;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.File;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -22,6 +24,15 @@ public class TabooBot extends TelegramLongPollingBot {
     private static final String NEW_YORK_PHOTO_CAPTION = "New-York city";
     private static final String STICKER_FILE_ID = "CAACAgIAAxkBAAM6ZNjSGqVijTiJ9wyBC8qPeqsrUj8AAv4AA1advQraBGEwLvnX_zAE";
 
+    //    “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”
+    public static final Map<String, String> GAME_BY_EMOJI  = Map.of(
+            "dice", "\uD83C\uDFB2",
+            "darts", "\uD83C\uDFAF",
+            "basketball", "\uD83C\uDFC0",
+            "football", "⚽",
+            "bowling", "\uD83C\uDFB3",
+            "casino", "\uD83C\uDFB0"
+    );
 
     public TabooBot(@Value("${app.telegram.username}") String username,
                     @Value("${app.telegram.token}") String botToken,
@@ -42,6 +53,11 @@ public class TabooBot extends TelegramLongPollingBot {
                 logMessageEntities(message);
             }
             String text = message.getText();
+            if (GAME_BY_EMOJI.keySet().contains(text)) {
+                SendDice sendDice = messageBuilder.buildSendDice(chatId, GAME_BY_EMOJI.get(text));
+                execute(sendDice);
+                return;
+            }
             switch (text) {
                 case "/text" -> execute(messageBuilder.buildTextMessage(chatId, "My text message"));
                 case "/photo" -> {
@@ -59,6 +75,13 @@ public class TabooBot extends TelegramLongPollingBot {
                 case "/formattedText" -> {
                     var formattedMessage = messageBuilder.buildFormattedTextMessage(chatId);
                     execute(formattedMessage);
+                }
+                case "/play" -> {
+                    var replyKeyboardMessage = messageBuilder.buildReplyKeyboardMessage(chatId);
+                    execute(replyKeyboardMessage);
+                }
+                case "/endGame" -> {
+                    execute(messageBuilder.buildDeleteKeyboardMessage(chatId));
                 }
             }
         } else if (message.hasSticker()) {
