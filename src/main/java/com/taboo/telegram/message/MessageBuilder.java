@@ -4,15 +4,19 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.*;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class MessageBuilder {
+    public static final String DONATE_CALLBACK = "DONATE_CALLBACK";
 
     public SendMessage buildTextMessage(Long chatId, String text) {
         var message = new SendMessage();
@@ -47,6 +51,61 @@ public class MessageBuilder {
         replyKeyboard.setResizeKeyboard(true);
         replyKeyboard.setOneTimeKeyboard(false);
         message.setReplyMarkup(replyKeyboard);
+        return message;
+    }
+
+    public SendMessage buildInlineKeyboardMessage(Long chatId) {
+        var message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Please consider donating.");
+
+        var inlineKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> linesOfButtons = new ArrayList<>();
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+
+        var donateBtn = new InlineKeyboardButton();
+        donateBtn.setText("DONATE \uD83D\uDCB5");
+        donateBtn.setCallbackData(DONATE_CALLBACK);
+        row1.add(donateBtn);
+        linesOfButtons.add(row1);
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        var doNotShowThisBtn = new InlineKeyboardButton();
+        doNotShowThisBtn.setText("Don't show this again");
+        doNotShowThisBtn.setCallbackData("DO_NOT_SHOW_THIS");
+        row2.add(doNotShowThisBtn);
+        var nextTimeBtn = new InlineKeyboardButton();
+        nextTimeBtn.setText("Next time");
+        nextTimeBtn.setCallbackData("NEXT_TIME");
+        row2.add(nextTimeBtn);
+        linesOfButtons.add(row2);
+
+        inlineKeyboard.setKeyboard(linesOfButtons);
+
+        message.setReplyMarkup(inlineKeyboard);
+
+        return message;
+    }
+
+    public SendMessage buildDonateOptions(Long chatId) {
+        var message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("You can donate through:");
+
+        var inlineKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> listOfButtons = new ArrayList<>();
+
+        var paypalBtn = new InlineKeyboardButton();
+        paypalBtn.setText("Paypal");
+        paypalBtn.setUrl("https://www.paypal.com/");
+        var kofiBtn = new InlineKeyboardButton();
+        kofiBtn.setText("Ko-fi");
+        kofiBtn.setUrl("https://ko-fi.com/");
+        listOfButtons.add(List.of(paypalBtn, kofiBtn));
+
+        inlineKeyboard.setKeyboard(listOfButtons);
+
+        message.setReplyMarkup(inlineKeyboard);
         return message;
     }
 

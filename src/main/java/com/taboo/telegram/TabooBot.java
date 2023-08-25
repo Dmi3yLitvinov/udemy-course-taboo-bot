@@ -8,11 +8,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendDice;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.File;
 import java.util.Map;
+
+import static com.taboo.telegram.message.MessageBuilder.DONATE_CALLBACK;
 
 @Slf4j
 @Component
@@ -45,47 +48,58 @@ public class TabooBot extends TelegramLongPollingBot {
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        log.info("telegram id ={}",message.getFrom().getId());
-        if (message.hasText()) {
-            if (message.hasEntities()) {
-                logMessageEntities(message);
+        if (update.hasMessage()) {
+            Message message = update.getMessage();
+            Long chatId = message.getChatId();
+            log.info("telegram id ={}", message.getFrom().getId());
+            if (message.hasText()) {
+                if (message.hasEntities()) {
+                    logMessageEntities(message);
+                }
+                String text = message.getText();
+                if (GAME_BY_EMOJI.keySet().contains(text)) {
+                    SendDice sendDice = messageBuilder.buildSendDice(chatId, GAME_BY_EMOJI.get(text));
+                    execute(sendDice);
+                    return;
+                }
+                switch (text) {
+                    case "/text" -> execute(messageBuilder.buildTextMessage(chatId, "My text message"));
+                    case "/photo" -> {
+                        var sendPhoto = messageBuilder.buildPhotoMessage(chatId, NEW_YORK_PHOTO_URL, NEW_YORK_PHOTO_CAPTION);
+                        execute(sendPhoto);
+                    }
+                    case "/document" -> {
+                        var sendDocument = messageBuilder.buildDocumentMessage(chatId, "Here is a file", readFile("/files/New-York.jpeg"));
+                        execute(sendDocument);
+                    }
+                    case "/sticker" -> {
+                        var sendSticker = messageBuilder.buildStickerMessage(chatId, STICKER_FILE_ID);
+                        execute(sendSticker);
+                    }
+                    case "/formattedText" -> {
+                        var formattedMessage = messageBuilder.buildFormattedTextMessage(chatId);
+                        execute(formattedMessage);
+                    }
+                    case "/play" -> {
+                        var replyKeyboardMessage = messageBuilder.buildReplyKeyboardMessage(chatId);
+                        execute(replyKeyboardMessage);
+                    }
+                    case "/endGame" -> {
+                        execute(messageBuilder.buildDeleteKeyboardMessage(chatId));
+                    }
+                    case "/donate" -> {
+                        execute(messageBuilder.buildInlineKeyboardMessage(chatId));
+                    }
+                }
+            } else if (message.hasSticker()) {
+                log.info("Sticker file id={}", message.getSticker().getFileId());
             }
-            String text = message.getText();
-            if (GAME_BY_EMOJI.keySet().contains(text)) {
-                SendDice sendDice = messageBuilder.buildSendDice(chatId, GAME_BY_EMOJI.get(text));
-                execute(sendDice);
-                return;
+        } else if (update.hasCallbackQuery()) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            Long chatId = callbackQuery.getMessage().getChatId();
+            if (DONATE_CALLBACK.equals(callbackQuery.getData())) {
+                execute(messageBuilder.buildDonateOptions(chatId));
             }
-            switch (text) {
-                case "/text" -> execute(messageBuilder.buildTextMessage(chatId, "My text message"));
-                case "/photo" -> {
-                    var sendPhoto = messageBuilder.buildPhotoMessage(chatId, NEW_YORK_PHOTO_URL, NEW_YORK_PHOTO_CAPTION);
-                    execute(sendPhoto);
-                }
-                case "/document" -> {
-                    var sendDocument = messageBuilder.buildDocumentMessage(chatId, "Here is a file", readFile("/files/New-York.jpeg"));
-                    execute(sendDocument);
-                }
-                case "/sticker" -> {
-                    var sendSticker = messageBuilder.buildStickerMessage(chatId, STICKER_FILE_ID);
-                    execute(sendSticker);
-                }
-                case "/formattedText" -> {
-                    var formattedMessage = messageBuilder.buildFormattedTextMessage(chatId);
-                    execute(formattedMessage);
-                }
-                case "/play" -> {
-                    var replyKeyboardMessage = messageBuilder.buildReplyKeyboardMessage(chatId);
-                    execute(replyKeyboardMessage);
-                }
-                case "/endGame" -> {
-                    execute(messageBuilder.buildDeleteKeyboardMessage(chatId));
-                }
-            }
-        } else if (message.hasSticker()) {
-            log.info("Sticker file id={}", message.getSticker().getFileId());
         }
     }
 
