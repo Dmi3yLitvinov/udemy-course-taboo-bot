@@ -3,7 +3,10 @@ package com.taboo.telegram.message;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.*;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
@@ -17,6 +20,8 @@ import java.util.List;
 @Component
 public class MessageBuilder {
     public static final String DONATE_CALLBACK = "DONATE_CALLBACK";
+    public static final String NEXT_TIME = "NEXT_TIME";
+    public static final String DO_NOT_SHOW_THIS = "DO_NOT_SHOW_THIS";
 
     public SendMessage buildTextMessage(Long chatId, String text) {
         var message = new SendMessage();
@@ -72,11 +77,11 @@ public class MessageBuilder {
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         var doNotShowThisBtn = new InlineKeyboardButton();
         doNotShowThisBtn.setText("Don't show this again");
-        doNotShowThisBtn.setCallbackData("DO_NOT_SHOW_THIS");
+        doNotShowThisBtn.setCallbackData(DO_NOT_SHOW_THIS);
         row2.add(doNotShowThisBtn);
         var nextTimeBtn = new InlineKeyboardButton();
         nextTimeBtn.setText("Next time");
-        nextTimeBtn.setCallbackData("NEXT_TIME");
+        nextTimeBtn.setCallbackData(NEXT_TIME);
         row2.add(nextTimeBtn);
         linesOfButtons.add(row2);
 
@@ -87,10 +92,11 @@ public class MessageBuilder {
         return message;
     }
 
-    public SendMessage buildDonateOptions(Long chatId) {
-        var message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("You can donate through:");
+    public EditMessageText buildDonateOptions(Message message) {
+        var editMessage = new EditMessageText();
+        editMessage.setChatId(message.getChatId());
+        editMessage.setMessageId(message.getMessageId());
+        editMessage.setText("%s\n\nYou can donate through:".formatted(message.getText()));
 
         var inlineKeyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> listOfButtons = new ArrayList<>();
@@ -105,8 +111,15 @@ public class MessageBuilder {
 
         inlineKeyboard.setKeyboard(listOfButtons);
 
-        message.setReplyMarkup(inlineKeyboard);
-        return message;
+        editMessage.setReplyMarkup(inlineKeyboard);
+        return editMessage;
+    }
+
+    public DeleteMessage buildDeleteMessage(Message message) {
+        var deleteMsg = new DeleteMessage();
+        deleteMsg.setMessageId(message.getMessageId());
+        deleteMsg.setChatId(message.getChatId());
+        return deleteMsg;
     }
 
     public SendDice buildSendDice(Long chatId, String emoji) {

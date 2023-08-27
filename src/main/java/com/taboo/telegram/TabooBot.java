@@ -15,7 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.io.File;
 import java.util.Map;
 
-import static com.taboo.telegram.message.MessageBuilder.DONATE_CALLBACK;
+import static com.taboo.telegram.message.MessageBuilder.*;
 
 @Slf4j
 @Component
@@ -96,9 +96,12 @@ public class TabooBot extends TelegramLongPollingBot {
             }
         } else if (update.hasCallbackQuery()) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
-            Long chatId = callbackQuery.getMessage().getChatId();
-            if (DONATE_CALLBACK.equals(callbackQuery.getData())) {
-                execute(messageBuilder.buildDonateOptions(chatId));
+            Message message = callbackQuery.getMessage();
+            String data = callbackQuery.getData();
+            if (DONATE_CALLBACK.equals(data)) {
+                execute(messageBuilder.buildDonateOptions(message));
+            } else if (DO_NOT_SHOW_THIS.equals(data) || NEXT_TIME.equals(data)) {
+                execute(messageBuilder.buildDeleteMessage(message));
             }
         }
     }
