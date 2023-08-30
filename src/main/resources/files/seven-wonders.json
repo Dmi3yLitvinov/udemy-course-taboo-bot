@@ -1,0 +1,53 @@
+{
+  "articles" : [
+    {
+      "title": "Great Pyramid of Giza",
+      "description" : "The Great Pyramid of Giza[a] is the largest Egyptian pyramid and served as the tomb of pharaoh Khufu, who ruled during the Fourth Dynasty of the Old Kingdom. Built in the early 26th century BC, over a period of about 27 years,[3] the pyramid is the oldest of the Seven Wonders of the Ancient World, and the only wonder that has remained largely intact. It is the most famous monument of the Giza pyramid complex, which is part of the UNESCO World Heritage Site \"Memphis and its Necropolis\".[4] It is situated at the northern end of the line of the three pyramids at Giza.",
+      "articleUrl": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza",
+      "imageUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kheops-Pyramid.jpg/600px-Kheops-Pyramid.jpg",
+      "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kheops-Pyramid.jpg/200px-Kheops-Pyramid.jpg"
+    },
+    {
+      "title": "Colossus of Rhodes",
+      "description": "The Colossus of Rhodes was a statue of the Greek sun-god Helios, erected in the city of Rhodes, on the Greek island of the same name, by Chares of Lindos in 280 BC. One of the Seven Wonders of the Ancient World, it was constructed to celebrate the successful defence of Rhodes city against an attack by Demetrius I of Macedon, who had besieged it for a year with a large army and navy.",
+      "articleUrl": "https://en.wikipedia.org/wiki/Colossus_of_Rhodes",
+      "imageUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Colosse_de_Rhodes_%28Barclay%29.jpg/440px-Colosse_de_Rhodes_%28Barclay%29.jpg",
+      "thumbUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Colosse_de_Rhodes_%28Barclay%29.jpg/200px-Colosse_de_Rhodes_%28Barclay%29.jpg"
+    },
+    {
+      "title": "Hanging Gardens of Babylon",
+      "description": "The Hanging Gardens of Babylon were one of the Seven Wonders of the Ancient World listed by Hellenic culture. They were described as a remarkable feat of engineering with an ascending series of tiered gardens containing a wide variety of trees, shrubs, and vines, resembling a large green mountain constructed of mud bricks. It was said to have been built in the ancient city of Babylon, near present-day Hillah, Babil province, in Iraq. The Hanging Gardens' name is derived from the Greek word κρεμαστός (kremastós, lit. 'overhanging'), which has a broader meaning than the modern English word \"hanging\" and refers to trees being planted on a raised structure such as a terrace.",
+      "articleUrl": "https://en.wikipedia.org/wiki/Hanging_Gardens_of_Babylon",
+      "imageUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Hanging_Gardens_of_Babylon.jpg/700px-Hanging_Gardens_of_Babylon.jpg",
+      "thumbUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Hanging_Gardens_of_Babylon.jpg/200px-Hanging_Gardens_of_Babylon.jpg"
+    },
+    {
+      "title": "Lighthouse of Alexandria",
+      "description": "The Lighthouse of Alexandria, sometimes called the Pharos of Alexandria, was a lighthouse built by the Ptolemaic Kingdom of Ancient Egypt, during the reign of Ptolemy II Philadelphus (280–247 BC).[2] It has been estimated to have been at least 100 metres (330 ft) in overall height. One of the Seven Wonders of the Ancient World, for many centuries it was one of the tallest man-made structures in the world.",
+      "articleUrl": "https://en.wikipedia.org/wiki/Lighthouse_of_Alexandria",
+      "imageUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Lighthouse_-_Thiersch.png/440px-Lighthouse_-_Thiersch.png",
+      "thumbUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Lighthouse_-_Thiersch.png/200px-Lighthouse_-_Thiersch.png"
+    },
+    {
+      "title": "Mausoleum at Halicarnassus",
+      "description": "The Mausoleum at Halicarnassus or Tomb of Mausolus[a] was a tomb built between 353 and 350 BC in Halicarnassus (present Bodrum, Turkey) for Mausolus, an Anatolian from Caria and a satrap in the Achaemenid Empire, and his sister-wife Artemisia II of Caria. The structure was designed by the Greek architects Satyros and Pythius of Priene.[1][2] Its elevated tomb structure is derived from the tombs of neighbouring Lycia, a territory Mausolus had invaded and annexed c. 360 BC, such as the Nereid Monument.",
+      "articleUrl": "https://en.wikipedia.org/wiki/Mausoleum_at_Halicarnassus",
+      "imageUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Mausoleum_at_Halicarnassus_at_the_Bodrum_Museum_of_Underwater_Archaeology.jpg/500px-Mausoleum_at_Halicarnassus_at_the_Bodrum_Museum_of_Underwater_Archaeology.jpg",
+      "thumbUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Mausoleum_at_Halicarnassus_at_the_Bodrum_Museum_of_Underwater_Archaeology.jpg/200px-Mausoleum_at_Halicarnassus_at_the_Bodrum_Museum_of_Underwater_Archaeology.jpg"
+    },
+    {
+      "title": "Statue of Zeus at Olympia",
+      "description": "The Statue of Zeus at Olympia was a giant seated figure, about 12.4 m (41 ft) tall,[1] made by the Greek sculptor Phidias around 435 BC at the sanctuary of Olympia, Greece, and erected in the Temple of Zeus there. Zeus is the sky and thunder god in ancient Greek religion, who rules as king of the gods of Mount Olympus.",
+      "articleUrl": "https://en.wikipedia.org/wiki/Statue_of_Zeus_at_Olympia",
+      "imageUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Le_Jupiter_Olympien_ou_l%27art_de_la_sculpture_antique.jpg/440px-Le_Jupiter_Olympien_ou_l%27art_de_la_sculpture_antique.jpg",
+      "thumbUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Le_Jupiter_Olympien_ou_l%27art_de_la_sculpture_antique.jpg/200px-Le_Jupiter_Olympien_ou_l%27art_de_la_sculpture_antique.jpg"
+    },
+    {
+      "title": "Temple of Artemis",
+      "description": "The Temple of Artemis or Artemision, also known as the Temple of Diana, was a Greek temple dedicated to an ancient, local form of the goddess Artemis (identified with Diana, a Roman goddess). It was located in Ephesus (near the modern town of Selçuk in present-day Turkey). By 401 AD it had been ruined or destroyed.[1] Only foundations and fragments of the last temple remain at the site.",
+      "articleUrl": "https://en.wikipedia.org/wiki/Temple_of_Artemis",
+      "imageUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Miniaturk_009.jpg/440px-Miniaturk_009.jpg",
+      "thumbUrl" : "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Miniaturk_009.jpg/200px-Miniaturk_009.jpg"
+    }
+  ]
+}

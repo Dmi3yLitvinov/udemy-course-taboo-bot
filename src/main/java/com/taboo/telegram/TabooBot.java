@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendDice;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 
 import java.io.File;
 import java.util.Map;
@@ -102,6 +103,12 @@ public class TabooBot extends TelegramLongPollingBot {
                 execute(messageBuilder.buildDonateOptions(message));
             } else if (DO_NOT_SHOW_THIS.equals(data) || NEXT_TIME.equals(data)) {
                 execute(messageBuilder.buildDeleteMessage(message));
+            }
+        } else if (update.hasInlineQuery()) {
+            InlineQuery inlineQuery = update.getInlineQuery();
+            String query = inlineQuery.getQuery();
+            if("wonders".equals(query)) {
+                execute(messageBuilder.buildWondersInlineQuery(inlineQuery));
             }
         }
     }

@@ -1,19 +1,29 @@
 package com.taboo.telegram.message;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.taboo.model.SevenWonders;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.*;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultArticle;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +32,15 @@ public class MessageBuilder {
     public static final String DONATE_CALLBACK = "DONATE_CALLBACK";
     public static final String NEXT_TIME = "NEXT_TIME";
     public static final String DO_NOT_SHOW_THIS = "DO_NOT_SHOW_THIS";
+
+    public SevenWonders sevenWonders;
+
+    @PostConstruct
+    public void initSevenWonders() throws IOException {
+        var resource = new ClassPathResource("/files/seven-wonders.json");
+        ObjectMapper mapper = new ObjectMapper();
+        sevenWonders = mapper.readValue(resource.getFile(), SevenWonders.class);
+    }
 
     public SendMessage buildTextMessage(Long chatId, String text) {
         var message = new SendMessage();
@@ -163,6 +182,36 @@ public class MessageBuilder {
         var file = new InputFile(fileId);
         message.setSticker(file);
         return message;
+    }
+
+    public AnswerInlineQuery buildWondersInlineQuery(InlineQuery inlineQuery) {
+        var answer = new AnswerInlineQuery();
+        answer.setInlineQueryId(inlineQuery.getId());
+        List<InlineQueryResult> queryResults = new ArrayList<>();
+        List<SevenWonders.Article> articles = sevenWonders.getArticles();
+        for (int i = 0; i < articles.size(); i++) {
+            InlineQueryResultArticle article = buildInlineQueryArticle(i + "", articles.get(i));
+            queryResults.add(article);
+        }
+
+        answer.setResults(queryResults);
+        return answer;
+    }
+
+    private InlineQueryResultArticle buildInlineQueryArticle(String id, SevenWonders.Article article) {
+        var resultArticle = new InlineQueryResultArticle();
+        resultArticle.setId(id);
+        resultArticle.setTitle(article.getTitle());
+        resultArticle.setDescription(article.getDescription());
+        resultArticle.setUrl(article.getArticleUrl());
+        resultArticle.setHideUrl(true);
+        resultArticle.setThumbUrl(article.getThumbUrl());
+
+        var content = new InputTextMessageContent();
+        content.setMessageText(article.getDescription());
+        resultArticle.setInputMessageContent(content);
+
+        return resultArticle;
     }
 
     public String generateFormattedText(String parseMode) {
