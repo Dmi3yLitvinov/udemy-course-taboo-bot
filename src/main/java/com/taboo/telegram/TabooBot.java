@@ -109,6 +109,8 @@ public class TabooBot extends TelegramLongPollingBot {
             String query = inlineQuery.getQuery();
             if("wonders".equals(query)) {
                 execute(messageBuilder.buildWondersInlineQuery(inlineQuery));
+            } else if (query.startsWith("color ")) {
+                execute(messageBuilder.buildColorInlineQuery(inlineQuery));
             }
         }
     }

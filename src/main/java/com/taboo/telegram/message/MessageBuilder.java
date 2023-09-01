@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultArticle;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
@@ -25,6 +26,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -198,6 +200,35 @@ public class MessageBuilder {
         return answer;
     }
 
+    public AnswerInlineQuery buildColorInlineQuery(InlineQuery inlineQuery) {
+        var answer = new AnswerInlineQuery();
+        answer.setInlineQueryId(inlineQuery.getId());
+        List<InlineQueryResult> queryResults = new ArrayList<>();
+        String hex = inlineQuery.getQuery().substring("color ".length());
+        if (hex.length() == 6) {
+            List<String> tones = new ArrayList<>();
+            tones.addAll(generateShades(hex));
+            tones.add(hex);
+            tones.addAll(generateTints(hex));
+            for (int i = 0; i < tones.size(); i++) {
+                queryResults.add(buildInlineQueryPhoto(i + "", tones.get(i)));
+            }
+        }
+        answer.setResults(queryResults);
+        return answer;
+    }
+
+    private InlineQueryResultPhoto buildInlineQueryPhoto(String id, String hex) {
+        var inlinePhoto = new InlineQueryResultPhoto();
+        inlinePhoto.setId(id);
+        inlinePhoto.setCaption(hex);
+        inlinePhoto.setPhotoUrl("https://singlecolorimage.com/get/%s/300x300".formatted(hex));
+        inlinePhoto.setThumbUrl("https://singlecolorimage.com/get/%s/100x100".formatted(hex));
+        inlinePhoto.setPhotoHeight(100);
+        inlinePhoto.setPhotoWidth(100);
+        return inlinePhoto;
+    }
+
     private InlineQueryResultArticle buildInlineQueryArticle(String id, SevenWonders.Article article) {
         var resultArticle = new InlineQueryResultArticle();
         resultArticle.setId(id);
@@ -227,6 +258,44 @@ public class MessageBuilder {
                     """;
         }
         return null;
+    }
+
+    public static List<String> generateTints(String hexColor) {
+        int baseColor = Integer.parseInt(hexColor, 16);
+        int baseRed = (baseColor >> 16) & 0xFF;
+        int baseGreen = (baseColor >> 8) & 0xFF;
+        int baseBlue = baseColor & 0xFF;
+
+        List<String> tints = new ArrayList<>();
+
+        for (int i = 1; i <= 5; i++) {
+            int r = (int) ((255 - baseRed) * (i * 0.1) + baseRed);
+            int g = (int) ((255 - baseGreen) * (i * 0.1) + baseGreen);
+            int b = (int) ((255 - baseBlue) * (i * 0.1) + baseBlue);
+
+            String tintHex = String.format("%02X%02X%02X", r, g, b);
+            tints.add(tintHex);
+        }
+        return tints;
+    }
+
+    public static List<String> generateShades(String hexColor) {
+        int baseColor = Integer.parseInt(hexColor, 16);
+        int baseRed = (baseColor >> 16) & 0xFF;
+        int baseGreen = (baseColor >> 8) & 0xFF;
+        int baseBlue = baseColor & 0xFF;
+
+        LinkedList<String> shades = new LinkedList<>();
+
+        for (int i = 1; i <= 5; i++) {
+            int r = (int) (baseRed * (1 - (i * 0.1)));
+            int g = (int) (baseGreen * (1 - (i * 0.1)));
+            int b = (int) (baseBlue * (1 - (i * 0.1)));
+
+            String shadeHex = String.format("%02X%02X%02X", r, g, b);
+            shades.push(shadeHex);
+        }
+        return shades;
     }
 
 }
