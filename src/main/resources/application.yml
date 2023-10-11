@@ -1,3 +1,9 @@
+spring:
+  datasource:
+    url: ${env.variables.db.url}
+    username: ${env.variables.db.username}
+    password: ${env.variables.db.password}
+
 app:
   telegram:
     username: ${env.variables.telegram.username}
