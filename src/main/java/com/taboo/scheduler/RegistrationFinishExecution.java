@@ -1,7 +1,9 @@
 package com.taboo.scheduler;
 
-import com.taboo.entity.WaitRoom;
+import com.taboo.entity.*;
+import com.taboo.entity.enums.GameRole;
 import com.taboo.entity.enums.WaitRoomStatus;
+import com.taboo.service.GameService;
 import com.taboo.service.WaitRoomService;
 import com.taboo.telegram.message.MessageBuilder;
 import com.taboo.telegram.message.MessageSender;
@@ -25,6 +27,7 @@ public class RegistrationFinishExecution {
     private final MessageBuilder messageBuilder;
     private final MessageSender messageSender;
     private final ThreadPoolTaskScheduler taskScheduler;
+    private final GameService gameService;
 
     @Lazy
     @Autowired
@@ -44,9 +47,23 @@ public class RegistrationFinishExecution {
             EditMessageText notEnoughUserMsg = messageBuilder.editNotEnoughUserMsg(waitRoom.getMessageId(), telegramChatId);
             messageSender.sendMessage(notEnoughUserMsg);
         } else {
-            SendMessage gameStartedMsg = messageBuilder.buildTextMsg(telegramChatId, "The game has started!");
-            messageSender.sendMessage(gameStartedMsg);
+            Game game = gameService.save(waitRoom);
+            Card nextCard = gameService.getNextCard(game);
+            User explainer = getExplainer(game);
+            SendMessage nextTurnMsg = messageBuilder.buildNextTurnMsg(telegramChatId, explainer, nextCard.getId());
+            SendMessage cardMsg = messageBuilder.buildCardMsg(explainer.getTelegramId(), nextCard);
+            messageSender.sendMessage(nextTurnMsg);
+            messageSender.sendMessage(cardMsg);
+
         }
         waitRoom.setStatus(WaitRoomStatus.REGISTRATION_FINISHED);
+    }
+
+    private User getExplainer(Game game) {
+        return game.getUsers().stream()
+                .filter(ug -> ug.getGameRole() == GameRole.EXPLAINER)
+                .findFirst()
+                .map(UserGame::getUser)
+                .orElseThrow();
     }
 }
