@@ -1,9 +1,15 @@
 package com.taboo.telegram;
 
+import com.taboo.entity.Chat;
+import com.taboo.entity.enums.ChatBotStatus;
+import com.taboo.service.ChatService;
 import com.taboo.telegram.command.BotCommandHandler;
+import com.taboo.telegram.message.MessageBuilder;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -11,16 +17,23 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class TabooBot extends TelegramLongPollingBot {
 
     private final String username;
+    private final ChatService chatService;
+    private final MessageBuilder messageBuilder;
     private final BotCommandHandler commandHandler;
 
     public TabooBot(@Value("${app.telegram.username}") String username,
                     @Value("${app.telegram.token}") String botToken,
+                    ChatService chatService,
+                    MessageBuilder messageBuilder,
                     BotCommandHandler commandHandler) {
         super(botToken);
         this.username = username;
+        this.chatService = chatService;
+        this.messageBuilder = messageBuilder;
         this.commandHandler = commandHandler;
     }
 
+    @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
@@ -29,6 +42,13 @@ public class TabooBot extends TelegramLongPollingBot {
             if (text == null) return;
             if (text.startsWith("/")) {
                 commandHandler.handleCommand(message);
+            }
+        } else if (update.hasMyChatMember()) {
+            Chat chat = chatService.convert(update.getMyChatMember());
+            chat = chatService.save(chat);
+            if (chat.getChatBotStatus() == ChatBotStatus.ADMIN) {
+                SendMessage message = messageBuilder.buildTextMsg(chat.getTelegramChatId(), "Hello there!\nLet's play the taboo game");
+                execute(message);
             }
         }
     }
