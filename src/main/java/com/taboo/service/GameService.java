@@ -1,6 +1,7 @@
 package com.taboo.service;
 
 import com.taboo.entity.*;
+import com.taboo.entity.enums.CardStatus;
 import com.taboo.entity.enums.GameRole;
 import com.taboo.entity.enums.GameStatus;
 import com.taboo.repository.GameRepository;
@@ -110,5 +111,15 @@ public class GameService {
                 .findFirst()
                 .map(UserGame::getUser)
                 .orElseThrow();
+    }
+
+    public Game timeIsUp(Long telegramChatId) {
+        Game game = findGameInProgress(telegramChatId);
+        GameCard gameCard = getGameCardInProgress(game);
+        gameCard.setStatus(CardStatus.TIME_IS_UP);
+        UserGame userGame = getUserGameExplainer(game);
+        userGame.setGameRole(GameRole.GUESSER);
+        userGame.setExplained(true);
+        return game;
     }
 }

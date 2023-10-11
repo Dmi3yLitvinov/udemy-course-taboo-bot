@@ -1,8 +1,6 @@
 package com.taboo.scheduler;
 
-import com.taboo.entity.Card;
 import com.taboo.entity.Game;
-import com.taboo.entity.User;
 import com.taboo.entity.WaitRoom;
 import com.taboo.entity.enums.WaitRoomStatus;
 import com.taboo.service.GameService;
@@ -15,7 +13,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 import java.time.Instant;
@@ -30,6 +27,7 @@ public class RegistrationFinishExecution {
     private final MessageSender messageSender;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final GameService gameService;
+    private final TimeIsUpExecution timeIsUpExecution;
 
     @Lazy
     @Autowired
@@ -50,12 +48,8 @@ public class RegistrationFinishExecution {
             messageSender.sendMessage(notEnoughUserMsg);
         } else {
             Game game = gameService.save(waitRoom);
-            Card nextCard = gameService.getNextCard(game);
-            User explainer = gameService.getExplainer(game);
-            SendMessage nextTurnMsg = messageBuilder.buildNextTurnMsg(telegramChatId, explainer, nextCard.getId());
-            SendMessage cardMsg = messageBuilder.buildCardMsg(explainer.getTelegramId(), nextCard);
-            messageSender.sendMessage(nextTurnMsg);
-            messageSender.sendMessage(cardMsg);
+            messageSender.sendNextTurnMsg(telegramChatId, game);
+            timeIsUpExecution.scheduleTimeIsUp(telegramChatId);
 
         }
         waitRoom.setStatus(WaitRoomStatus.REGISTRATION_FINISHED);
