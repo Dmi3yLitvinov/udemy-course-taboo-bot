@@ -1,0 +1,1 @@
+UPDATE wait_room SET status = 'REGISTRATION_FINISHED';

@@ -1,5 +1,6 @@
 package com.taboo.telegram.command;
 
+import com.taboo.scheduler.RegistrationFinishExecution;
 import com.taboo.service.WaitRoomService;
 import com.taboo.telegram.message.MessageBuilder;
 import com.taboo.telegram.message.MessageSender;
@@ -17,6 +18,7 @@ public class PlayCommand implements BotCommand {
     private final MessageBuilder messageBuilder;
     private final MessageSender messageSender;
     private final WaitRoomService waitRoomService;
+    private final RegistrationFinishExecution registrationFinishExecution;
 
     private static final String NOT_A_GROUP_CHAT = "The game should take place in a group chat rather then in a private chat!";
 
@@ -32,6 +34,7 @@ public class PlayCommand implements BotCommand {
             Object sentMessage = messageSender.sendMessage(awaitingMsg);
             Integer messageId = extractMessageId(sentMessage);
             waitRoomService.save(chatId, hash, messageId);
+            registrationFinishExecution.scheduleRegistrationFinish(chatId);
         }
     }
 

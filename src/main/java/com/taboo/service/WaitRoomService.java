@@ -3,6 +3,7 @@ package com.taboo.service;
 import com.taboo.entity.Chat;
 import com.taboo.entity.User;
 import com.taboo.entity.WaitRoom;
+import com.taboo.entity.enums.WaitRoomStatus;
 import com.taboo.repository.ChatRepository;
 import com.taboo.repository.UserRepository;
 import com.taboo.repository.WaitRoomRepository;
@@ -32,5 +33,9 @@ public class WaitRoomService {
         User user = userRepository.findByTelegramId(telegramId);
         waitRoom.getUsers().add(user);
         return waitRoom;
+    }
+
+    public WaitRoom findAwaitingByTelegramChatId(Long telegramChatId) {
+        return repository.findByChat_telegramChatIdAndStatus(telegramChatId, WaitRoomStatus.AWAITING);
     }
 }
