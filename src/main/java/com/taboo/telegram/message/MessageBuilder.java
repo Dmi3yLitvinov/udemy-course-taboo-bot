@@ -14,6 +14,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class MessageBuilder {
@@ -139,6 +141,12 @@ public class MessageBuilder {
         message.setChatId(chatId);
         message.setParseMode(ParseMode.HTML);
 
+        InlineKeyboardMarkup inlineKeyboardMarkup = explainInlineKeyboardMarkup(cardId);
+        message.setReplyMarkup(inlineKeyboardMarkup);
+        return message;
+    }
+
+    private InlineKeyboardMarkup explainInlineKeyboardMarkup(Long cardId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         InlineKeyboardButton button = new InlineKeyboardButton();
@@ -146,8 +154,7 @@ public class MessageBuilder {
         button.setUrl("https://t.me/" + username);
         row1.add(button);
         inlineKeyboardMarkup.setKeyboard(List.of(row1));
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
+        return inlineKeyboardMarkup;
     }
 
     public SendMessage buildCardMsg(Long chatId, Card card) {
@@ -162,5 +169,27 @@ public class MessageBuilder {
         sendMessage.setText(txt);
         sendMessage.setChatId(chatId);
         return sendMessage;
+    }
+
+    public SendMessage buildTabooUsedMsg(Long telegramChatId, Set<String> tabooUsed) {
+        String tabooWords = tabooUsed.stream()
+                .map(String::toUpperCase)
+                .collect(Collectors.joining(", "));
+        String text = "⚠️ You mustn't use these words: %s".formatted(tabooWords);
+        return buildTextMsg(telegramChatId, text);
+    }
+
+    public SendMessage buildScoreEarnedMsg(Long telegramChatId, String firstName) {
+        String txt = "<b>" + firstName + "</b> receives a score \uD83C\uDFAF";
+        return buildTextMsg(telegramChatId, txt);
+    }
+
+    public SendMessage buildNextCardMsg(Long chatId, Long cardId) {
+        SendMessage message = new SendMessage();
+        message.setText("Next card ➡️");
+        message.setChatId(chatId);
+        message.setParseMode(ParseMode.HTML);
+        message.setReplyMarkup(explainInlineKeyboardMarkup(cardId));
+        return message;
     }
 }

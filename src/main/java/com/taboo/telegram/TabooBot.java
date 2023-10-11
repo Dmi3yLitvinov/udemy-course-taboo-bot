@@ -5,6 +5,7 @@ import com.taboo.entity.enums.ChatBotStatus;
 import com.taboo.service.ChatService;
 import com.taboo.telegram.command.BotCommandHandler;
 import com.taboo.telegram.message.MessageBuilder;
+import com.taboo.telegram.message.UserMessageHandler;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,17 +21,20 @@ public class TabooBot extends TelegramLongPollingBot {
     private final ChatService chatService;
     private final MessageBuilder messageBuilder;
     private final BotCommandHandler commandHandler;
+    private final UserMessageHandler userMessageHandler;
 
     public TabooBot(@Value("${app.telegram.username}") String username,
                     @Value("${app.telegram.token}") String botToken,
                     ChatService chatService,
                     MessageBuilder messageBuilder,
-                    BotCommandHandler commandHandler) {
+                    BotCommandHandler commandHandler,
+                    UserMessageHandler userMessageHandler) {
         super(botToken);
         this.username = username;
         this.chatService = chatService;
         this.messageBuilder = messageBuilder;
         this.commandHandler = commandHandler;
+        this.userMessageHandler = userMessageHandler;
     }
 
     @SneakyThrows
@@ -42,6 +46,8 @@ public class TabooBot extends TelegramLongPollingBot {
             if (text == null) return;
             if (text.startsWith("/")) {
                 commandHandler.handleCommand(message);
+            } else {
+                userMessageHandler.handle(message);
             }
         } else if (update.hasMyChatMember()) {
             Chat chat = chatService.convert(update.getMyChatMember());
