@@ -9,6 +9,7 @@ import com.taboo.telegram.message.MessageSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
@@ -27,6 +28,8 @@ public class StartCommand implements BotCommand {
         String hash = extractHash(message.getText());
         if (hash != null) {
             WaitRoom waitRoom = waitRoomService.join(hash, message.getFrom().getId());
+            EditMessageText editWaitRoomMsg = messageBuilder.editAwaitingMsg(waitRoom);
+            messageSender.sendMessage(editWaitRoomMsg);
             String txt = "You've joined the game in the <b>%s</b> group".formatted(waitRoom.getChat().getTitle());
             SendMessage joinMessage = messageBuilder.buildTextMsg(chatId, txt);
             messageSender.sendMessage(joinMessage);

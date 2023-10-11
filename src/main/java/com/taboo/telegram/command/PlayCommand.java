@@ -29,13 +29,21 @@ public class PlayCommand implements BotCommand {
         } else {
             String hash = UUID.randomUUID().toString();
             SendMessage awaitingMsg = messageBuilder.buildAwaitingMsg(chatId, hash);
-            messageSender.sendMessage(awaitingMsg);
-            waitRoomService.save(chatId, hash);
+            Object sentMessage = messageSender.sendMessage(awaitingMsg);
+            Integer messageId = extractMessageId(sentMessage);
+            waitRoomService.save(chatId, hash, messageId);
         }
     }
 
     @Override
     public boolean isMatch(String command) {
         return "play".equals(command);
+    }
+
+    private Integer extractMessageId(Object sentMessage) {
+        if (sentMessage instanceof Message message) {
+            return message.getMessageId();
+        }
+        throw new IllegalArgumentException("Unknown object type: " + sentMessage.getClass().getName());
     }
 }
