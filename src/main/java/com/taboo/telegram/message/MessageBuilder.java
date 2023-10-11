@@ -30,4 +30,28 @@ public class MessageBuilder {
         sendMessage.setText("You tried to perform an unknown command!");
         return sendMessage;
     }
+
+    public SendMessage buildRulesMsg(Long chatId) {
+        SendMessage message = new SendMessage();
+        String txt = """
+                There are two roles: \uD83D\uDC42Guesser and \uD83D\uDDE3 Explainer.
+                
+                The Explainer receives a card in a private chat that includes a word for others to guess and a list of taboo words \uD83D\uDEAB
+                ✅ The objective is to assist other players in guessing the word while avoiding the use of any of the taboo words
+                
+                If any of the Guessers correctly guess a word, both the Explainer and Guesser earn a score\uD83C\uDFAF
+                
+                The Explainer role changes every five minutes ⌛, and the game continues until everyone has taken a turn explaining.       
+                """;
+        message.setText(txt);
+        message.setChatId(chatId);
+        return message;
+    }
+
+    public SendMessage buildTextMsg(Long chatId, String text) {
+        var message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(text);
+        return message;
+    }
 }
